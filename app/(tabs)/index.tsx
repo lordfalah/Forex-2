@@ -9,11 +9,18 @@ import { Text } from "@/components/Themed";
 import { useEffect, useState } from "react";
 import { currenciesForex, ratesForex } from "@/app/utils/data";
 import RefreshApi from "@/components/RefreshApi";
+import { timeConverter } from "@/app/utils/help";
+
+type Rate = [string, number];
+type Currencies = [string, string];
 
 export default function TabOneScreen() {
-  const [dataCurrencies, setDataCurrencies] = useState<any>(null);
-  const [dataRates, setDataRates] = useState<any>(null);
+  const [dataCurrencies, setDataCurrencies] = useState<Currencies[] | null>(
+    null
+  );
+  const [dataRates, setDataRates] = useState<Rate[] | null>(null);
   const [refreshing, setRefreshing] = useState(true);
+  const [date, setDate] = useState("");
 
   const forexAPI = async () => {
     setRefreshing(true);
@@ -22,14 +29,13 @@ export default function TabOneScreen() {
         ratesForex(),
         currenciesForex(),
       ]);
-      // make await
-      // await new Promise((resolve) => setTimeout(resolve, 3000));
 
       // Set state with the first 10 / 100 entries
-      const entriesCurrencies = Object.entries(currencies);
-      setDataCurrencies(entriesCurrencies.slice(0, 10));
+      const entriesCurrencies = Object.entries(currencies) as Currencies[];
+      setDataCurrencies(entriesCurrencies.slice(0, 100));
 
-      const entriesRates = Object.entries(rates?.rates);
+      setDate(timeConverter(rates?.timestamp || 0));
+      const entriesRates = Object.entries(rates?.rates) as Rate[];
       setDataRates(entriesRates.slice(0, 100));
     } catch (error) {
       console.log({ error });
@@ -58,12 +64,13 @@ export default function TabOneScreen() {
         dataCurrencies &&
         dataRates && (
           <View style={styles.contentForex}>
+            <Text lightColor="white">{date}</Text>
             <FlatList
               refreshControl={
                 <RefreshControl refreshing={refreshing} onRefresh={forexAPI} />
               }
               style={{ width: "100%" }}
-              keyExtractor={([key, index]) => index.toString() + key.toString()}
+              keyExtractor={([key, value], idx) => `${value + key + idx}`}
               data={dataRates}
               renderItem={({ item: [key, value], index }) => (
                 <View style={styles.listForex}>

@@ -6,6 +6,7 @@ import { Pressable } from "react-native";
 import Colors from "@/constants/Colors";
 import { useColorScheme } from "@/components/useColorScheme";
 import { useClientOnlyValue } from "@/components/useClientOnlyValue";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 function TabBarIcon(props: {
@@ -51,8 +52,19 @@ export default function TabLayout() {
       <Tabs.Screen
         name="two"
         options={{
-          title: "Tab Two",
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          title: "Cuaca",
+          tabBarIcon: ({ color }) => (
+            <MaterialCommunityIcons
+              name="weather-cloudy"
+              size={28}
+              style={{ marginBottom: -3 }}
+              color={color}
+            />
+          ),
+          headerStyle: {
+            backgroundColor: "green",
+          },
+          headerTintColor: "white",
         }}
       />
     </Tabs>
